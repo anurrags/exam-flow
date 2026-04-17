@@ -1,0 +1,13 @@
+{
+  "name": "examflow-monorepo",
+  "version": "1.0.0",
+  "description": "Monorepo definition for deploying ExamFlow seamlessly to split providers.",
+  "scripts": {
+    "install:frontend": "cd frontend && npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "install:backend": "echo 'Maven dependencies are resolved closely at build time'",
+    "build:backend": "cd backend && mvn clean package -DskipTests",
+    "start:backend": "java -jar backend/target/online-test-backend-1.0.0.jar",
+    "vercel-build": "npm run install:frontend && npm run build:frontend"
+  }
+}

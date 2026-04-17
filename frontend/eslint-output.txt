@@ -1,0 +1,117 @@
+
+/Users/anurag/Documents/WebProjects/OnlineTest/frontend/src/admin/CreateTest.jsx
+  56:6  warning  React Hook useEffect has missing dependencies: 'isEdit' and 'navigate'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/anurag/Documents/WebProjects/OnlineTest/frontend/src/admin/Dashboard.jsx
+  21:38  warning  React Hook useEffect has a missing dependency: 'fetchTests'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/anurag/Documents/WebProjects/OnlineTest/frontend/src/admin/Results.jsx
+  22:6  warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/anurag/Documents/WebProjects/OnlineTest/frontend/src/candidate/Done.jsx
+  16:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  14 |     const local = sessionStorage.getItem(`result_${testId}`);
+  15 |     if (local) {
+> 16 |       setResult(JSON.parse(local));
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  17 |       setLoading(false);
+  18 |       return;
+  19 |     }  react-hooks/set-state-in-effect
+
+/Users/anurag/Documents/WebProjects/OnlineTest/frontend/src/candidate/Instructions.jsx
+  22:6   warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  34:74  error    'e' is defined but never used                                                                                no-unused-vars
+
+/Users/anurag/Documents/WebProjects/OnlineTest/frontend/src/candidate/TestPage.jsx
+   17:32  error    Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+  15 |   const [marked, setMarked] = useState(new Set());
+  16 |   const [timeLeft, setTimeLeft] = useState(0);
+> 17 |   const [startTime] = useState(Date.now());
+     |                                ^^^^^^^^^^ Cannot call impure function
+  18 |   const [submitting, setSubmitting] = useState(false);
+  19 |   const [showSubmitModal, setShowSubmitModal] = useState(false);
+  20 |   const [violationMsg, setViolationMsg] = useState(null); // { icon, message }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/purity
+   37:6   warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+   54:7   error    Error: Cannot access variable before it is declared
+
+`handleSubmit` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  52 |   useEffect(() => {
+  53 |     if (timeLeft === 0 && session && !submittedRef.current) {
+> 54 |       handleSubmit(true);
+     |       ^^^^^^^^^^^^ `handleSubmit` accessed before it is declared
+  55 |     }
+  56 |   }, [timeLeft, session]);
+  57 |
+
+  179 |
+  180 |   // ── Submit ─────────────────────────────────────────────────────────────────
+> 181 |   const handleSubmit = useCallback(async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 182 |     if (submittedRef.current) return;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 183 |     submittedRef.current = true;
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 199 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 200 |   }, [testId, answers, startTime]);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `handleSubmit` is declared here
+  201 |
+  202 |   if (!session || !questions.length) return <div className="page-center"><div className="spinner" /></div>;
+  203 |                                                                                                                                                                                                                                                                                                        react-hooks/immutability
+   56:6   warning  React Hook useEffect has a missing dependency: 'handleSubmit'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+   73:9   error    Error: Cannot access variable before it is declared
+
+`logViolation` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  71 |       if (!document.fullscreenElement) {
+  72 |         setShowFsPrompt(true);       // Show re-enter prompt (requires user click)
+> 73 |         logViolation('FULLSCREEN_EXIT');
+     |         ^^^^^^^^^^^^ `logViolation` accessed before it is declared
+  74 |       }
+  75 |     };
+  76 |     document.addEventListener('fullscreenchange', onFsChange);
+
+  156 |
+  157 |   // ── Log violation ──────────────────────────────────────────────────────────
+> 158 |   const logViolation = useCallback(async (type) => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 159 |     try {
+      | ^^^^^^^^^
+> 160 |       const s = JSON.parse(sessionStorage.getItem(`session_${testId}`));
+      | ^^^^^^^^^
+> 161 |       if (s?.sessionId) await api.post('/api/candidate/test/violation', { sessionId: s.sessionId, type });
+      | ^^^^^^^^^
+> 162 |     } catch (e) {
+      | ^^^^^^^^^
+> 163 |       // ignore
+      | ^^^^^^^^^
+> 164 |     }
+      | ^^^^^^^^^
+> 165 |   }, [testId]);
+      | ^^^^^^^^^^^^^^^^ `logViolation` is declared here
+  166 |
+  167 |   // ── Format time ────────────────────────────────────────────────────────────
+  168 |   const fmtTime = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;  react-hooks/immutability
+   78:6   warning  React Hook useEffect has a missing dependency: 'logViolation'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+   84:14  error    'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+  116:6   warning  React Hook useEffect has a missing dependency: 'logViolation'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+  133:6   warning  React Hook useEffect has a missing dependency: 'logViolation'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+  144:6   warning  React Hook useEffect has a missing dependency: 'logViolation'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+  155:6   warning  React Hook useEffect has a missing dependency: 'logViolation'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+  162:14  error    'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+  200:6   warning  React Hook useCallback has a missing dependency: 'navigate'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+
+✖ 19 problems (7 errors, 12 warnings)
+
